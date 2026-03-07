@@ -72,12 +72,10 @@ export default function Success() {
           });
 
           // Preload immediately
-          const [qrImg, logo1, ticketImg, logo2, logo3] = await Promise.all([
+          const [qrImg, logoss, ticketImg] = await Promise.all([
             loadImage(url),
-            loadImage('/logo 1.png'),
-            loadImage('/ticket.png'),
-            loadImage('/logo 2.png'),
-            loadImage('/logo3.png')
+            loadImage('/logoss-01.png'),
+            loadImage('/ticket.png')
           ]);
 
           const canvas = document.createElement('canvas');
@@ -88,33 +86,31 @@ export default function Success() {
           const qrSize = 300;
           canvas.width = qrSize + (padding * 4); 
           
-          // Logo 1 config
-          let lWidth = 260; // Bigger logo top center
-          let lHeight = logo1 ? (logo1.height / logo1.width) * lWidth : 0;
-          let startY = 15; // Reduced more
+          // Logoss config (Top Header) - Made wider for better visibility
+          let lWidth = 320; 
+          let lHeight = logoss ? (logoss.height / logoss.width) * lWidth : 0;
+          let startY = 20; 
           
-          let qrY = logo1 ? startY + lHeight + 0 : startY + 0; // Tighter
+          let qrY = logoss ? startY + lHeight + 15 : startY + 15; 
           
           // QR size & Text
-          let idY = qrY + qrSize + 10; // Tighter
-          let ticketY = idY + 5; // Tighter
+          let idY = qrY + qrSize + 25; 
+          let ticketY = idY + 15; 
           
-          // Ticket Img Cropping to forcefully strip its white padding!
-          let tWidth = canvas.width - 40;
+          // Ticket Img Cropping to forcefully strip its white padding but keep it LARGE!
+          let tWidth = canvas.width - 20; // Increased width (less side margin)
+          let tOffsetX = 10;
           let dHeight = 0;
           if (ticketImg) {
-            let cropY = ticketImg.height * 0.25;
-            let cropHeight = ticketImg.height * 0.50;
+            let cropY = ticketImg.height * 0.15; // less aggressive crop so it's bigger
+            let cropHeight = ticketImg.height * 0.70;
             dHeight = (cropHeight / ticketImg.width) * tWidth;
           }
           
-          let bottomLogosY = ticketY + dHeight + 5;
-          let bottomLogosHeight = 50; // Dynamic height for logos
-          
-          let textY = bottomLogosY + bottomLogosHeight + 15; 
+          let textY = ticketY + dHeight + 25; 
 
           // Set complete Canvas Height dynamically now
-          canvas.height = textY + 95;
+          canvas.height = textY + 105;
           
           // Outer edge baby pink
           ctx.fillStyle = '#FFB6C1';
@@ -124,9 +120,9 @@ export default function Success() {
           ctx.fillStyle = '#ffffff';
           ctx.fillRect(15, 15, canvas.width - 30, canvas.height - 30);
           
-          // Draw Logo 1 centered at top
-          if (logo1) {
-            ctx.drawImage(logo1, canvas.width / 2 - (lWidth / 2), startY, lWidth, lHeight);
+          // Draw Logoss centered at top
+          if (logoss) {
+            ctx.drawImage(logoss, canvas.width / 2 - (lWidth / 2), startY, lWidth, lHeight);
           }
 
           // Draw QR code centered
@@ -139,22 +135,12 @@ export default function Success() {
           ctx.font = 'bold 16px monospace';
           ctx.fillText(`TICKET ID: ${id}`, canvas.width / 2, idY);
           
-          // Draw Cropped ticket.png
+          // Draw Cropped ticket.png (LARGER)
           if (ticketImg) {
-            const cropY = ticketImg.height * 0.25;
-            const cropHeight = ticketImg.height * 0.50;
-            ctx.drawImage(ticketImg, 0, cropY, ticketImg.width, cropHeight, 20, ticketY, tWidth, dHeight);
+            const cropY = ticketImg.height * 0.15;
+            const cropHeight = ticketImg.height * 0.70;
+            ctx.drawImage(ticketImg, 0, cropY, ticketImg.width, cropHeight, tOffsetX, ticketY, tWidth, dHeight);
           }
-          
-          // Draw bottom logos side-by-side
-          let logoSeparation = 20;
-          let l2Width = logo2 ? (logo2.width / logo2.height) * bottomLogosHeight : 0;
-          let l3Width = logo3 ? (logo3.width / logo3.height) * bottomLogosHeight : 0;
-          let totalLogosWidth = l2Width + logoSeparation + l3Width;
-          let startLogosX = (canvas.width / 2) - (totalLogosWidth / 2);
-          
-          if (logo2) ctx.drawImage(logo2, startLogosX, bottomLogosY, l2Width, bottomLogosHeight);
-          if (logo3) ctx.drawImage(logo3, startLogosX + l2Width + logoSeparation, bottomLogosY, l3Width, bottomLogosHeight);
 
           // Draw Dashed Line separator
           ctx.beginPath();
