@@ -95,37 +95,4 @@ export const markUserPresent = async (id) => {
   }
 };
 
-export const sendOtp = async (phone) => {
-  if (!GOOGLE_APP_SCRIPT_URL) throw new Error('Google Apps Script URL is not configured.');
-  
-  const queryParams = new URLSearchParams({
-    action: 'sendOtp',
-    phone: phone
-  }).toString();
-  
-  const submitUrl = `${GOOGLE_APP_SCRIPT_URL}?${queryParams}`;
-  const result = await fetchWithRetry(submitUrl, { method: 'GET' }, 3, 500);
-  
-  if (result.result !== 'success') {
-    throw new Error(result.error || 'Failed to send OTP');
-  }
-  return true;
-};
 
-export const verifyOtp = async (phone, otp) => {
-  if (!GOOGLE_APP_SCRIPT_URL) throw new Error('Google Apps Script URL is not configured.');
-  
-  const queryParams = new URLSearchParams({
-    action: 'verifyOtp',
-    phone: phone,
-    otp: otp
-  }).toString();
-  
-  const submitUrl = `${GOOGLE_APP_SCRIPT_URL}?${queryParams}`;
-  const result = await fetchWithRetry(submitUrl, { method: 'GET' }, 3, 500);
-  
-  if (result.result !== 'success') {
-    throw new Error(result.error || 'Invalid OTP');
-  }
-  return true;
-};
