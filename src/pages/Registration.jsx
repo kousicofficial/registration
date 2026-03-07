@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { saveUser } from '../utils/storage';
+import { saveUser, getUsers } from '../utils/storage';
 import { UserPlus } from 'lucide-react';
 
 export default function Registration() {
@@ -12,6 +12,15 @@ export default function Registration() {
     phone: ''
   });
 
+  // Check on mount if user is already registered on this device
+  useEffect(() => {
+    const existingUsers = getUsers();
+    if (existingUsers && existingUsers.length > 0) {
+      // If already registered, directly show them their QR
+      navigate(`/success/${existingUsers[0].id}`);
+    }
+  }, [navigate]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -20,6 +29,15 @@ export default function Registration() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    // Check if phone number is already registered
+    const existingUsers = getUsers();
+    const existingUser = existingUsers.find(u => u.phone === formData.phone);
+    if (existingUser) {
+      alert("This phone number is already registered!");
+      navigate(`/success/${existingUser.id}`);
+      return;
+    }
+
     // Validations
     if (!formData.email.toLowerCase().endsWith('@gmail.com')) {
       alert("Email address must end with @gmail.com");
