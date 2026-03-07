@@ -86,12 +86,23 @@ export default function Success() {
           const qrSize = 340; // BIg QR Code!
           canvas.width = qrSize + (padding * 4); 
           
-          // Logoss config (Top Header) - FULL Width
-          let lWidth = canvas.width - 40; 
-          let lHeight = logoss ? (logoss.height / logoss.width) * lWidth : 0;
-          let startY = 15; // Closer to top
+          // Logoss config (Top Header) - EXACT Full Inner Width
+          let lWidth = canvas.width - 24; 
           
-          let qrY = logoss ? startY + lHeight + 5 : startY + 5; // Zero extra spacing
+          let lCropY = 0;
+          let lCropHeight = logoss ? logoss.height : 0;
+          let lHeight = logoss ? (logoss.height / logoss.width) * lWidth : 0;
+          
+          // Forcefully crop the top and bottom of the logo to destroy its built-in empty white space
+          if (logoss) {
+            lCropY = logoss.height * 0.10; // Chop top 10%
+            lCropHeight = logoss.height * 0.80; // Chop bottom 10%
+            lHeight = (lCropHeight / logoss.width) * lWidth; // Recalculate drawn height
+          }
+          
+          let startY = 12; // Exactly at the top inner white curve
+          
+          let qrY = logoss ? startY + lHeight + 0 : startY + 5; // Absolutely zero extra spacing
           
           // QR size & Text
           let idY = qrY + qrSize + 15; // Smashed below QR
@@ -107,10 +118,10 @@ export default function Success() {
             dHeight = (cropHeight / ticketImg.width) * tWidth;
           }
           
-          let textY = ticketY + dHeight + 15; // Super tight under the ticket
+          let textY = ticketY + dHeight + 10; // Super tight under the ticket
           
           // Outer edge baby pink
-          let bottomPadding = 75; // Shorter bottom pad
+          let bottomPadding = 65; // Ultra short bottom pad
           canvas.height = textY + bottomPadding;
           
           ctx.fillStyle = '#FFB6C1';
@@ -121,9 +132,10 @@ export default function Success() {
           ctx.fillStyle = '#ffffff';
           ctx.fillRect(borderThickness, borderThickness, canvas.width - (borderThickness * 2), canvas.height - (borderThickness * 2));
           
-          // Draw Logoss centered at top
+          // Draw Logoss centered at top with violent crop
           if (logoss) {
-            ctx.drawImage(logoss, canvas.width / 2 - (lWidth / 2), startY, lWidth, lHeight);
+            // drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh)
+            ctx.drawImage(logoss, 0, lCropY, logoss.width, lCropHeight, canvas.width / 2 - (lWidth / 2), startY, lWidth, lHeight);
           }
 
           // Draw QR code centered
