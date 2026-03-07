@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link, useSearchParams } from 'react-router-dom';
-import { User, Mail, Phone, Clock, CheckCircle } from 'lucide-react';
+import { User, Mail, Phone, Clock, CheckCircle, Lock } from 'lucide-react';
 import { getUser, markUserPresent } from '../utils/storage';
 
 export default function UserDetails() {
@@ -10,6 +10,28 @@ export default function UserDetails() {
   const [loading, setLoading] = useState(true);
   const [markedPresent, setMarkedPresent] = useState(false);
   const [marking, setMarking] = useState(false);
+
+  // Auth logic
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    // Check if organizer is already authenticated
+    if (localStorage.getItem('organizer_auth') === 'true') {
+      setIsAuthenticated(true);
+    }
+  }, []);
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    if (password === 'Supreme@098') {
+      localStorage.setItem('organizer_auth', 'true');
+      setIsAuthenticated(true);
+    } else {
+      setError('Invalid password. Please try again.');
+    }
+  };
 
   const handleMarkPresent = async () => {
     setMarking(true);
@@ -23,6 +45,8 @@ export default function UserDetails() {
   };
 
   useEffect(() => {
+    if (!isAuthenticated) return;
+
     // Simulate network delay
     setTimeout(() => {
       let userData = getUser(id);
@@ -41,7 +65,38 @@ export default function UserDetails() {
       setUser(userData);
       setLoading(false);
     }, 500);
-  }, [id, searchParams]);
+  }, [id, searchParams, isAuthenticated]);
+
+  if (!isAuthenticated) {
+    return (
+      <div className="card">
+        <h2 className="title">Organizer Access Required</h2>
+        <p className="subtitle">Enter password to view attendee details</p>
+  
+        <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '2rem' }}>
+          <input 
+            type="password" 
+            placeholder="Enter Organizer Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="form-input"
+            required
+          />
+          
+          {error && <p style={{ color: '#EF4444', fontSize: '0.875rem' }}>{error}</p>}
+  
+          <button type="submit" className="btn btn-primary">
+            <Lock className="icon" size={20} />
+            Login
+          </button>
+        </form>
+  
+        <Link to="/" className="btn btn-secondary" style={{ marginTop: '2rem', background: '#f5f5f5', color: '#333' }}>
+          Back to Home
+        </Link>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
@@ -142,3 +197,4 @@ export default function UserDetails() {
     </div>
   );
 }
+
