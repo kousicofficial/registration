@@ -112,10 +112,17 @@ export default function Success() {
           let tWidth = canvas.width - 24; // Maximum possible width (matching borders)
           let tOffsetX = 12;
           let dHeight = 0;
+          let tCropX = 0;
+          let tCropWidth = 0;
+          let tCropY = 0;
+          let tCropHeight = 0;
+
           if (ticketImg) {
-            let cropY = ticketImg.height * 0.20; // more aggressive crop to kill white space
-            let cropHeight = ticketImg.height * 0.60;
-            dHeight = (cropHeight / ticketImg.width) * tWidth;
+            tCropX = ticketImg.width * 0.045; // Aggressive left cut
+            tCropWidth = ticketImg.width * 0.91; // Aggressive right cut
+            tCropY = ticketImg.height * 0.20; 
+            tCropHeight = ticketImg.height * 0.60;
+            dHeight = (tCropHeight / tCropWidth) * tWidth;
           }
           
           let textY = ticketY + dHeight + 10; // Super tight under the ticket
@@ -150,9 +157,7 @@ export default function Success() {
           
           // Draw Cropped ticket.png (FULL WIDTH MATCHING)
           if (ticketImg) {
-            const cropY = ticketImg.height * 0.20;
-            const cropHeight = ticketImg.height * 0.60;
-            ctx.drawImage(ticketImg, 0, cropY, ticketImg.width, cropHeight, tOffsetX, ticketY, tWidth, dHeight);
+            ctx.drawImage(ticketImg, tCropX, tCropY, tCropWidth, tCropHeight, tOffsetX, ticketY, tWidth, dHeight);
           }
 
           // Draw Dashed Line separator
