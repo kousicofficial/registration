@@ -89,28 +89,28 @@ export default function Success() {
           // Logo 1 config
           let lWidth = 260; // Bigger logo top center
           let lHeight = logo1 ? (logo1.height / logo1.width) * lWidth : 0;
-          let startY = 30;
+          let startY = 20; // Reduced from 30
           
-          let qrY = logo1 ? startY + lHeight + 10 : startY + 10;
+          let qrY = logo1 ? startY + lHeight + 5 : startY + 5; // Reduced from 10
           
           // QR size & Text
-          let idY = qrY + qrSize + 25;
-          let ticketY = idY + 20;
+          let idY = qrY + qrSize + 15; // Reduced from 25
+          let ticketY = idY + 10; // Reduced from 20
           
           // Ticket Img Cropping to forcefully strip its white padding!
           let tWidth = canvas.width - 40;
           let dHeight = 0;
           if (ticketImg) {
-            // Cut off top 15% and bottom 15% of the original image to obliterate the white gap
-            let cropY = ticketImg.height * 0.15;
-            let cropHeight = ticketImg.height * 0.70;
+            // Cut off top 20% and bottom 20% of the original image to obliterate the white gap
+            let cropY = ticketImg.height * 0.20;
+            let cropHeight = ticketImg.height * 0.60;
             dHeight = (cropHeight / ticketImg.width) * tWidth;
           }
           
-          let textY = ticketY + dHeight + 25;
+          let textY = ticketY + dHeight + 15; // Reduced from 25
 
           // Set complete Canvas Height dynamically now
-          canvas.height = textY + 120;
+          canvas.height = textY + 115; // Reduced from textY + 120, and fixed spacing
           
           // Outer edge baby pink
           ctx.fillStyle = '#FFB6C1';
@@ -138,8 +138,8 @@ export default function Success() {
           // Draw Cropped ticket.png
           if (ticketImg) {
             // drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh)
-            const cropY = ticketImg.height * 0.15;
-            const cropHeight = ticketImg.height * 0.70;
+            const cropY = ticketImg.height * 0.20;
+            const cropHeight = ticketImg.height * 0.60;
             ctx.drawImage(ticketImg, 0, cropY, ticketImg.width, cropHeight, 20, ticketY, tWidth, dHeight);
           }
 
@@ -148,8 +148,8 @@ export default function Success() {
           ctx.setLineDash([5, 5]);
           ctx.strokeStyle = '#cbd5e1';
           ctx.lineWidth = 2;
-          ctx.moveTo(40, textY - 15);
-          ctx.lineTo(canvas.width - 40, textY - 15);
+          ctx.moveTo(40, textY - 10);
+          ctx.lineTo(canvas.width - 40, textY - 10);
           ctx.stroke();
           ctx.setLineDash([]);
           
@@ -157,17 +157,17 @@ export default function Success() {
           ctx.fillStyle = '#000080';
           ctx.font = 'bold 22px sans-serif';
           ctx.fillText(`Here is your QR code`, canvas.width / 2, textY + 15);
-          ctx.fillText(`for free checkup!`, canvas.width / 2, textY + 45);
+          ctx.fillText(`for free checkup!`, canvas.width / 2, textY + 40);
 
           // Draw Campaign Message (BLUE)
           ctx.fillStyle = '#000080';
-          ctx.font = 'bold 18px sans-serif';
-          ctx.fillText(`Walk to Care. Walk to Aware. Walk for Her.`, canvas.width / 2, textY + 85);
+          ctx.font = 'bold 17px sans-serif';
+          ctx.fillText(`Walk to Care. Walk to Aware. Walk for Her.`, canvas.width / 2, textY + 65);
           
           // Draw Name prominently
           ctx.fillStyle = '#000080';
           ctx.font = 'bold 24px sans-serif';
-          ctx.fillText(user.fullName, canvas.width / 2, textY + 130);
+          ctx.fillText(user.fullName, canvas.width / 2, textY + 95);
           
           // Download as PNG
           const pngUrl = canvas.toDataURL('image/png');
