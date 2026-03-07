@@ -33,14 +33,59 @@ export default function Registration() {
     }
 
     setSubmitting(true);
-    
-    try {
-      const savedUser = await saveUser(formData);
-      navigate(`/success/${savedUser.id}`);
-    } catch (err) {
-      alert(err.message || "Failed to register. Please try again.");
-      console.error(err);
-      setSubmitting(false);
+
+    const configuration = {
+      widgetId: "3663676b4633313536393639",
+      tokenAuth: "498390TnNUOfthlceH69ac0d49P1",
+      identifier: formData.phone,
+      success: async (data) => {
+        console.log('success response', data);
+        try {
+          const savedUser = await saveUser(formData);
+          navigate(`/success/${savedUser.id}`);
+        } catch (err) {
+          alert(err.message || "Failed to register. Please try again.");
+          console.error(err);
+          setSubmitting(false);
+        }
+      },
+      failure: (error) => {
+        console.log('failure reason', error);
+        alert(error?.message || "OTP verification failed. Please try again.");
+        setSubmitting(false);
+      }
+    };
+
+    if (typeof window.initSendOTP === 'function') {
+      window.initSendOTP(configuration);
+    } else {
+      // dynamically load script
+      const urls = [
+        'https://verify.msg91.com/otp-provider.js',
+        'https://verify.phone91.com/otp-provider.js'
+      ];
+      let i = 0;
+      const attempt = () => {
+        const s = document.createElement('script');
+        s.src = urls[i];
+        s.async = true;
+        s.onload = () => {
+            if (typeof window.initSendOTP === 'function') {
+                window.initSendOTP(configuration);
+            }
+        };
+        s.onerror = () => {
+            i++;
+            if (i < urls.length) {
+                attempt();
+            } else {
+                alert("Failed to load OTP service. Please try again.");
+                setSubmitting(false);
+            }
+        };
+        document.head.appendChild(s);
+      };
+      attempt();
     }
   };
 
