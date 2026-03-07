@@ -13,16 +13,10 @@ function App() {
     <BrowserRouter>
       <div className="app-container">
         <header className="app-header">
-          <div className="header-logos">
-            <img src="/logo 1.png" alt="Logo 1" className="header-logo" />
-          </div>
-          <h1 className="app-title">Event Registration</h1>
-          <div className="header-logos">
-            <img src="/logo 2.png" alt="Logo 2" className="header-logo" />
-            <img src="/logo3.png" alt="Logo 3" className="header-logo" />
-          </div>
+          <img src="/logoss-01.png" alt="Logos" className="main-logo" />
         </header>
         <main className="app-content">
+          <h1 className="main-heading">Event Registration</h1>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/organizer-login" element={<OrganizerLogin />} />
