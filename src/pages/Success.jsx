@@ -82,43 +82,44 @@ export default function Success() {
           const ctx = canvas.getContext('2d');
           
           // Width variables
-          const padding = 20;
-          const qrSize = 300;
+          const padding = 15; // Tighter padding overall
+          const qrSize = 340; // BIg QR Code!
           canvas.width = qrSize + (padding * 4); 
           
-          // Logoss config (Top Header) - Made wider for better visibility
-          let lWidth = 320; 
+          // Logoss config (Top Header) - MASSIVE Width
+          let lWidth = 360; 
           let lHeight = logoss ? (logoss.height / logoss.width) * lWidth : 0;
-          let startY = 20; 
+          let startY = 15; // Closer to top
           
-          let qrY = logoss ? startY + lHeight + 15 : startY + 15; 
+          let qrY = logoss ? startY + lHeight + 10 : startY + 10; // Extra tight spacing
           
           // QR size & Text
-          let idY = qrY + qrSize + 25; 
-          let ticketY = idY + 15; 
+          let idY = qrY + qrSize + 20; // Very tight below QR
+          let ticketY = idY + 10; // Tight gap before ticket 
           
           // Ticket Img Cropping to forcefully strip its white padding but keep it LARGE!
-          let tWidth = canvas.width - 20; // Increased width (less side margin)
+          let tWidth = canvas.width - 20; // Maximum possible width inside bounds
           let tOffsetX = 10;
           let dHeight = 0;
           if (ticketImg) {
-            let cropY = ticketImg.height * 0.15; // less aggressive crop so it's bigger
+            let cropY = ticketImg.height * 0.15; 
             let cropHeight = ticketImg.height * 0.70;
             dHeight = (cropHeight / ticketImg.width) * tWidth;
           }
           
-          let textY = ticketY + dHeight + 25; 
-
-          // Set complete Canvas Height dynamically now
-          canvas.height = textY + 105;
+          let textY = ticketY + dHeight + 20; // Super tight under the ticket
           
           // Outer edge baby pink
+          let bottomPadding = 85; 
+          canvas.height = textY + bottomPadding;
+          
           ctx.fillStyle = '#FFB6C1';
           ctx.fillRect(0, 0, canvas.width, canvas.height);
           
-          // Inner White Background
+          // Inner White Background (Tighter border)
+          let borderThickness = 12;
           ctx.fillStyle = '#ffffff';
-          ctx.fillRect(15, 15, canvas.width - 30, canvas.height - 30);
+          ctx.fillRect(borderThickness, borderThickness, canvas.width - (borderThickness * 2), canvas.height - (borderThickness * 2));
           
           // Draw Logoss centered at top
           if (logoss) {
@@ -152,19 +153,19 @@ export default function Success() {
           ctx.stroke();
           ctx.setLineDash([]);
           
-          // Draw Messages
+          // Draw Messages (Tight spacing)
           ctx.fillStyle = '#000080';
           ctx.font = 'bold 22px sans-serif';
-          ctx.fillText(`Here is your QR code`, canvas.width / 2, textY + 10);
-          ctx.fillText(`for free checkup!`, canvas.width / 2, textY + 35);
+          ctx.fillText(`Here is your QR code`, canvas.width / 2, textY + 5);
+          ctx.fillText(`for free checkup!`, canvas.width / 2, textY + 30);
 
           // Draw Campaign Message (BLUE)
           ctx.font = 'bold 17px sans-serif';
-          ctx.fillText(`Walk to Care. Walk to Aware. Walk for Her.`, canvas.width / 2, textY + 60);
+          ctx.fillText(`Walk to Care. Walk to Aware. Walk for Her.`, canvas.width / 2, textY + 52);
           
           // Draw Name prominently
           ctx.font = 'bold 24px sans-serif';
-          ctx.fillText(user.fullName, canvas.width / 2, textY + 85);
+          ctx.fillText(user.fullName, canvas.width / 2, textY + 75);
           
           // Download as PNG
           const pngUrl = canvas.toDataURL('image/png');
