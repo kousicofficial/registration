@@ -37,7 +37,7 @@ export default function Registration() {
     const configuration = {
       widgetId: "3663676b4633313536393639",
       tokenAuth: "498390TnNUOfthlceH69ac0d49P1",
-      identifier: formData.phone,
+      identifier: `+91${formData.phone}`,
       success: async (data) => {
         console.log('success response', data);
         try {
