@@ -1,13 +1,26 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link, useSearchParams } from 'react-router-dom';
-import { User, Mail, Phone, Building2 } from 'lucide-react';
-import { getUser } from '../utils/storage';
+import { User, Mail, Phone, Clock, CheckCircle } from 'lucide-react';
+import { getUser, markUserPresent } from '../utils/storage';
 
 export default function UserDetails() {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [markedPresent, setMarkedPresent] = useState(false);
+  const [marking, setMarking] = useState(false);
+
+  const handleMarkPresent = async () => {
+    setMarking(true);
+    const success = await markUserPresent(id);
+    if (success) {
+      setMarkedPresent(true);
+    } else {
+      alert("Failed to mark present. Please try again.");
+    }
+    setMarking(false);
+  };
 
   useEffect(() => {
     // Simulate network delay
@@ -21,7 +34,7 @@ export default function UserDetails() {
           fullName: searchParams.get('name'),
           email: searchParams.get('email'),
           phone: searchParams.get('phone'),
-          organization: searchParams.get('org')
+          createdAt: searchParams.get('time')
         };
       }
       
@@ -94,10 +107,12 @@ export default function UserDetails() {
         </div>
 
         <div className="user-detail-item">
-          <span className="user-detail-label">Organization</span>
+          <span className="user-detail-label">Registration Time</span>
           <div style={{ display: 'flex', alignItems: 'center' }}>
-            <Building2 className="icon" size={18} style={{ color: 'var(--primary)' }} />
-            <span className="user-detail-value">{user.organization}</span>
+            <Clock className="icon" size={18} style={{ color: 'var(--primary)' }} />
+            <span className="user-detail-value">
+              {user.createdAt || 'N/A'}
+            </span>
           </div>
         </div>
 
@@ -109,9 +124,21 @@ export default function UserDetails() {
         </div>
       </div>
 
-      <Link to="/" className="btn btn-secondary" style={{ marginTop: '2rem' }}>
-        Back to Home
-      </Link>
+      <div style={{ marginTop: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <button 
+          onClick={handleMarkPresent}
+          className={`btn ${markedPresent ? 'btn-secondary' : 'btn-primary'}`}
+          disabled={markedPresent || marking}
+          style={markedPresent ? { backgroundColor: '#10B981', color: 'white', borderColor: '#10B981' } : {}}
+        >
+          <CheckCircle className="icon" size={20} />
+          {marking ? 'Updating...' : markedPresent ? 'Marked Present' : 'Mark as Present'}
+        </button>
+
+        <Link to="/organizer" className="btn btn-secondary">
+          Back to Scanner / Details
+        </Link>
+      </div>
     </div>
   );
 }

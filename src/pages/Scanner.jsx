@@ -7,6 +7,11 @@ export default function Scanner() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (localStorage.getItem('organizer_auth') !== 'true') {
+      navigate('/organizer-login');
+      return;
+    }
+
     // Initializing the QR Code scanner
     const scanner = new Html5QrcodeScanner('reader', {
       qrbox: {
@@ -60,8 +65,8 @@ export default function Scanner() {
         </div>
       )}
 
-      <Link to="/" className="btn btn-secondary" style={{ marginTop: '2rem' }}>
-        Back to Dashboard
+      <Link to="/organizer" className="btn btn-secondary" style={{ marginTop: '2rem' }}>
+        Back to Organizer Portal
       </Link>
     </div>
   );

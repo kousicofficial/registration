@@ -13,36 +13,19 @@ export default function Home() {
 
   return (
     <div className="card">
-      <h2 className="title">Event Registration Dashboard</h2>
-      <p className="subtitle">Scan the QR code below to open the registration form</p>
+      <h2 className="title">Event Registration System</h2>
+      <p className="subtitle">Please select your role</p>
 
-      {registerUrl && (
-        <div className="qr-container">
-          <QRCodeSVG 
-            value={registerUrl} 
-            size={256}
-            level="H"
-            includeMargin={true}
-          />
-        </div>
-      )}
-
-      <div>
-        <Link to="/scanner" className="btn btn-primary" style={{ marginBottom: '1rem' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '2rem' }}>
+        <Link to="/organizer-login" className="btn btn-primary">
           <ScanLine className="icon" size={20} />
-          Scan Attendee QR Code
+          Organizer Portal
         </Link>
         
-        <button 
-          onClick={() => {
-            navigator.clipboard.writeText(registerUrl);
-            alert('Registration link copied to clipboard!');
-          }}
-          className="btn btn-secondary"
-        >
+        <Link to="/attendee" className="btn btn-secondary">
           <Share2 className="icon" size={20} />
-          Copy Registration Link
-        </button>
+          Attendee Portal
+        </Link>
       </div>
     </div>
   );

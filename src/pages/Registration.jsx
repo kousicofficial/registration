@@ -5,11 +5,11 @@ import { UserPlus } from 'lucide-react';
 
 export default function Registration() {
   const navigate = useNavigate();
+  const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
-    phone: '',
-    organization: ''
+    phone: ''
   });
 
   const handleChange = (e) => {
@@ -17,12 +17,31 @@ export default function Registration() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Simulate API call and save user
-    const savedUser = saveUser(formData);
-    // Redirect to success page with generated ID
-    navigate(`/success/${savedUser.id}`);
+    
+    // Validations
+    if (!formData.email.toLowerCase().endsWith('@gmail.com')) {
+      alert("Email address must end with @gmail.com");
+      return;
+    }
+
+    const phoneRegex = /^\d{10}$/;
+    if (!phoneRegex.test(formData.phone)) {
+      alert("Phone number must be exactly 10 digits");
+      return;
+    }
+
+    setSubmitting(true);
+    
+    try {
+      const savedUser = await saveUser(formData);
+      navigate(`/success/${savedUser.id}`);
+    } catch (err) {
+      alert(err.message || "Failed to register. Please try again.");
+      console.error(err);
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -69,27 +88,17 @@ export default function Registration() {
             value={formData.phone}
             onChange={handleChange}
             required
-            placeholder="+1 (555) 000-0000"
+            pattern="[0-9]{10}"
+            title="Please enter exactly 10 digits"
+            placeholder="1234567890"
+            maxLength="10"
           />
         </div>
 
-        <div className="form-group">
-          <label className="form-label" htmlFor="organization">Organization</label>
-          <input
-            type="text"
-            id="organization"
-            name="organization"
-            className="form-input"
-            value={formData.organization}
-            onChange={handleChange}
-            required
-            placeholder="Company/University Name"
-          />
-        </div>
 
-        <button type="submit" className="btn btn-primary" style={{ marginTop: '1rem' }}>
+        <button type="submit" className="btn btn-primary" style={{ marginTop: '1rem' }} disabled={submitting}>
           <UserPlus className="icon" size={20} />
-          Complete Registration
+          {submitting ? 'Registering...' : 'Complete Registration'}
         </button>
       </form>
     </div>

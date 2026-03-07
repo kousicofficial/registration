@@ -1,8 +1,8 @@
 :root {
-  --primary: #4F46E5;
-  --primary-hover: #4338CA;
+  --primary: #FFB6C1;
+  --primary-hover: #FF9EAE;
   --bg-color: #F9FAFB;
-  --text-main: #111827;
+  --text-main: #000080;
   --text-muted: #6B7280;
   --card-bg: #FFFFFF;
   --border-color: #E5E7EB;
@@ -31,11 +31,61 @@ body {
 
 .app-header {
   background-color: var(--primary);
-  color: white;
-  padding: 1.5rem;
-  text-align: center;
+  color: var(--text-main);
+  padding: 1rem;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: nowrap;
 }
+
+.header-logos {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.header-logo {
+  height: clamp(35px, 8vw, 60px);
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.app-title {
+  flex: 1;
+  margin: 0;
+  text-align: center;
+  font-size: clamp(1.25rem, 4vw, 2rem);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+  .app-header {
+    justify-content: space-between;
+    padding: 0.5rem;
+  }
+  .app-title {
+    order: 0;
+    width: auto;
+    margin-top: 0;
+    white-space: normal;
+    font-size: 0.9rem;
+    line-height: 1.2;
+  }
+  .header-logo {
+    height: 30px !important;
+  }
+  .header-logos {
+    flex: 0 0 auto;
+  }
+  .header-logos:nth-of-type(2) {
+    justify-content: flex-end;
+  }
+}
+
 
 .app-content {
   flex: 1;
@@ -100,24 +150,18 @@ body {
   font-size: 1rem;
 }
 
-.btn-primary {
+.btn-primary, .btn-secondary {
   background-color: var(--primary);
-  color: white;
+  color: var(--text-main);
 }
 
-.btn-primary:hover {
+.btn-primary:hover, .btn-secondary:hover {
   background-color: var(--primary-hover);
   transform: translateY(-1px);
 }
 
 .btn-secondary {
-  background-color: #E5E7EB;
-  color: #374151;
   margin-top: 1rem;
-}
-
-.btn-secondary:hover {
-  background-color: #D1D5DB;
 }
 
 .form-group {

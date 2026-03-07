@@ -1,47 +1,53 @@
-import { v4 as uuidv4 } from 'uuid';
+
 
 const USERS_KEY = 'registration_users';
 // IMPORTANT: Replace this with your Google Apps Script Web App URL
-const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby-DBiaj9NfBPprRaPVTb7mlrJDUeJS2fgJiLgJy8ko8N4FHD1VJ-n4Ds2a2EdqzEjx/exec'; 
+const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby2Nrk2X60NXfp4O6zCDosb-OLoo2IwQjawyqZ70Y92yJt9bwkPVWxKzBY5YiKaNYE0VA/exec'; 
 
-export const saveUser = (userData) => {
+export const saveUser = async (userData) => {
   const users = getUsers();
-  const newUser = {
-    ...userData,
-    id: uuidv4(),
-    createdAt: new Date().toISOString()
-  };
+  // Format Date and Time cleanly
+  const now = new Date();
+  const timeString = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
+  const dateString = now.toLocaleDateString('en-IN');
   
-  // Save locally
-  users.push(newUser);
-  localStorage.setItem(USERS_KEY, JSON.stringify(users));
-
-  // Sync to Google Sheets if App Script URL is configured
-  if (GOOGLE_APP_SCRIPT_URL) {
-    try {
-      // Build form data to send to Google Apps script
-      const queryParams = new URLSearchParams({
-        id: newUser.id,
-        fullName: newUser.fullName,
-        email: newUser.email,
-        phone: newUser.phone,
-        organization: newUser.organization,
-        createdAt: newUser.createdAt
-      }).toString();
-
-      // Submit using a GET request (avoids CORS preflight issues with POST)
-      const submitUrl = `${GOOGLE_APP_SCRIPT_URL}?${queryParams}`;
-      
-      fetch(submitUrl, {
-        method: 'GET',
-        mode: 'no-cors' // Usually required for simple Google Apps Script setups
-      }).catch(err => console.error("Error syncing to Google Sheets:", err));
-    } catch (e) {
-      console.error("Failed to sync to Google Sheets", e);
-    }
+  if (!GOOGLE_APP_SCRIPT_URL) {
+    throw new Error('Google Apps Script URL is not configured.');
   }
 
-  return newUser;
+  const queryParams = new URLSearchParams({
+    action: 'register',
+    fullName: userData.fullName,
+    email: userData.email,
+    phone: userData.phone,
+    createdAt: `${timeString} - ${dateString}`
+  }).toString();
+  
+  const submitUrl = `${GOOGLE_APP_SCRIPT_URL}?${queryParams}`;
+  
+  try {
+    const response = await fetch(submitUrl);
+    const result = await response.json();
+    
+    if (result.result !== 'success') {
+      throw new Error(result.error || 'Failed to register');
+    }
+
+    const newUser = {
+      ...userData,
+      id: result.newId, // Gets S00X from Sheets
+      createdAt: `${timeString} - ${dateString}`
+    };
+    
+    // Save locally
+    users.push(newUser);
+    localStorage.setItem(USERS_KEY, JSON.stringify(users));
+    
+    return newUser;
+  } catch (err) {
+    console.error("Failed to sync to Google Sheets", err);
+    throw err;
+  }
 };
 
 export const getUser = (id) => {
@@ -52,4 +58,24 @@ export const getUser = (id) => {
 export const getUsers = () => {
   const usersJson = localStorage.getItem(USERS_KEY);
   return usersJson ? JSON.parse(usersJson) : [];
+};
+
+export const markUserPresent = async (id) => {
+  if (!GOOGLE_APP_SCRIPT_URL) return false;
+  try {
+    const queryParams = new URLSearchParams({
+      action: 'markPresent',
+      id: id
+    }).toString();
+    
+    const submitUrl = `${GOOGLE_APP_SCRIPT_URL}?${queryParams}`;
+    
+    const response = await fetch(submitUrl);
+    const result = await response.json();
+    
+    return result.result === 'success';
+  } catch(e) {
+    console.error(e);
+    return false;
+  }
 };
