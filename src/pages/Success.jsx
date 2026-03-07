@@ -121,7 +121,7 @@ export default function Success() {
           let textY = ticketY + dHeight + 10; // Super tight under the ticket
           
           // Outer edge baby pink
-          let bottomPadding = 65; // Ultra short bottom pad
+          let bottomPadding = 95; // Enough room for the bottom text and name to display fully
           canvas.height = textY + bottomPadding;
           
           ctx.fillStyle = '#FFB6C1';
