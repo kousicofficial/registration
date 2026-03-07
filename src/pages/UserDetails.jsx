@@ -49,10 +49,12 @@ export default function UserDetails() {
 
     // Simulate network delay
     setTimeout(() => {
-      let userData = getUser(id);
+      let userData = null;
       
-      // Fallback: If not on this device's local storage, check QR code URL parameters
-      if (!userData && searchParams.get('name')) {
+      // Always prioritize the QR Code parameters over local storage. 
+      // If the organizer scans the QR, it contains the actual details of that attendee.
+      // This prevents the organizer's old local storage from overriding the scanned user.
+      if (searchParams.get('name')) {
         userData = {
           id: id,
           fullName: searchParams.get('name'),
@@ -60,6 +62,9 @@ export default function UserDetails() {
           phone: searchParams.get('phone'),
           createdAt: searchParams.get('time')
         };
+      } else {
+        // Fallback: Check local storage
+        userData = getUser(id);
       }
       
       setUser(userData);
